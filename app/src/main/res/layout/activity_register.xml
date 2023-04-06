@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/pagebkg"
+    tools:context=".RegisterActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="30dp"
+            app:cardCornerRadius="30dp"
+            app:cardElevation="20dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_gravity="center_horizontal"
+                android:padding="24dp"
+                android:background="@drawable/custom_edit_text">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sign_up"
+                    android:textAlignment="center"
+                    android:textColor="@color/lavender"
+                    android:textSize="36sp"
+                    android:textStyle="bold"
+                    tools:ignore="TextContrastCheck" />
+
+                <EditText
+                    android:id="@+id/signupEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="40dp"
+                    android:background="@drawable/custom_edit_text"
+                    android:drawableStart="@drawable/ic_baseline_email_24"
+                    android:drawableTint="@color/lavender"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/email"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/lavender"
+                    tools:ignore="TextContrastCheck"
+                    android:inputType="textEmailAddress"
+                    android:autofillHints="" />
+
+                <EditText
+                    android:id="@+id/signupUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/custom_edit_text"
+                    android:drawableStart="@drawable/ic_baseline_person_24"
+                    android:drawableTint="@color/lavender"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/username"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/lavender"
+                    tools:ignore="TextContrastCheck"
+                    android:inputType="textPersonName"
+                    android:autofillHints="" />
+
+                <EditText
+                    android:id="@+id/signupPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/custom_edit_text"
+                    android:drawableStart="@drawable/ic_baseline_lock_24"
+                    android:drawableTint="@color/lavender"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/password"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="#5C6BC0"
+                    tools:ignore="TextContrastCheck"
+                    android:inputType="textPassword"
+                    android:autofillHints="" />
+
+                <EditText
+                    android:id="@+id/signupMobile"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/custom_edit_text"
+                    android:drawableStart="@drawable/ic_baseline_local_phone_24"
+                    android:drawableTint="@color/lavender"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/phone_number"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="#5C6BC0"
+                    tools:ignore="TextContrastCheck"
+                    android:inputType="phone"
+                    android:autofillHints="" />
+
+                <EditText
+                    android:id="@+id/signupDOB"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/custom_edit_text"
+                    android:drawableStart="@drawable/ic_baseline_calendar_month_24"
+                    android:drawableTint="@color/lavender"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/date_of_birth_dd_mm_yy"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="#5C6BC0"
+                    tools:ignore="TextContrastCheck"
+                    android:inputType="text|date"
+                    android:autofillHints=""
+                    android:focusable="false"/>
+
+                <EditText
+                    android:id="@+id/signupName"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/custom_edit_text"
+                    android:drawableStart="@drawable/ic_baseline_person_24"
+                    android:drawableTint="@color/lavender"
+                    android:drawablePadding="8dp"
+                    android:hint="@string/name"
+                    android:padding="8dp"
+                    android:textColor="@color/black"
+                    android:textColorHint="#5C6BC0"
+                    tools:ignore="TextContrastCheck"
+                    android:inputType="textPersonName"
+                    android:autofillHints="" />
+
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:id="@+id/signupGender"
+                    android:layout_marginTop="20dp">
+
+                    <RadioButton
+                        android:id="@+id/btnMale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="60dp"
+                        android:text="@string/male"
+                        android:textColor="@color/lavender"
+                        android:textSize="16sp"
+                        tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
+
+                    <RadioButton
+                        android:id="@+id/btnFemale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:text="@string/female"
+                        android:textColor="@color/lavender"
+                        android:textSize="16sp"
+                        tools:ignore="TouchTargetSizeCheck, TextContrastCheck" />
+
+                </RadioGroup>
+
+                <Button
+                    android:id="@+id/signupBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="30dp"
+                    android:backgroundTint="@color/lavender"
+                    android:onClick="registerOnClick"
+                    android:text="@string/sign_up"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck,TouchTargetSizeCheck" />
+
+                <TextView
+                    android:id="@+id/loginRedirectText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:minHeight="48dp"
+                    android:onClick="redirectLoginOnClick"
+                    android:padding="8dp"
+                    android:text="@string/already_has_an_account"
+                    android:textColor="@color/lavender"
+                    android:textSize="18sp"
+                    tools:ignore="TextContrastCheck" />
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

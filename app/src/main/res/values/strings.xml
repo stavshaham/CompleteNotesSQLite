@@ -13,4 +13,5 @@
     <string name="female">Female</string>
     <string name="sign_up">Sign Up</string>
     <string name="already_has_an_account">Already has an account</string>
+    <string name="login_with_fingerprint">Login with fingerprint</string>
 </resources>

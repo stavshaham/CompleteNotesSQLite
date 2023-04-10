@@ -2,48 +2,59 @@ package com.stav.completenotes;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.stav.completenotes.db.SQLiteHelper;
+
 public class SettingsActivity extends AppCompatActivity {
 
-    private TextView suggestions;
+    private TextView suggestions, logout;
+    private SQLiteHelper sqLiteHelper;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        sqLiteHelper = new SQLiteHelper(getApplicationContext());
+
         //link for the user to send suggestions to the owner
         suggestions = findViewById(R.id.suggestions);
+        // Links the logout btn
+        logout = findViewById(R.id.logout);
 
-        suggestions.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent mailIntent = new Intent(Intent.ACTION_VIEW);
+        logout.setOnClickListener(view -> {
+            sqLiteHelper.setCurrentUser(null);
 
-                //initialse the values for the mail
-                Uri data = Uri.parse("mailto:?subject=" + "ToDo App Suggestion"+ "&body=" + "Your Suggestions" + "&to=" + "shahamstav@gmail.com");
+            // Removing user from last user who logged in in the device
+            SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.PREFS_NAME, 0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
 
-                mailIntent.setData(data);
-                startActivity(Intent.createChooser(mailIntent, "Send mail..."));
-            }
+            editor.putBoolean("hasLoggedIn", false);
+            editor.putString("emailLoggedIn", "");
+            editor.commit();
+
+            Intent loginActivity = new Intent(SettingsActivity.this, LoginActivity.class);
+            loginActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(loginActivity);
         });
-    }
 
-    //if the AppTheme switch's state is changed, we need to restart the app
-    // to load the set AppTheme
-    public void restartApp(){
-        Intent j = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(j);
+        suggestions.setOnClickListener(v -> {
+            Intent mailIntent = new Intent(Intent.ACTION_VIEW);
 
-        Intent i = new Intent(getApplicationContext(), SettingsActivity.class);
-        startActivity(i);
+            //initialse the values for the mail
+            Uri data = Uri.parse("mailto:?subject=" + "ToDo App Suggestion"+ "&body=" + "Your Suggestions" + "&to=" + "shahamstav@gmail.com");
 
-        finish();
+            mailIntent.setData(data);
+            startActivity(Intent.createChooser(mailIntent, "Send mail..."));
+        });
     }
 }

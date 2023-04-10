@@ -1,16 +1,14 @@
 package com.stav.completenotes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -23,11 +21,19 @@ import android.widget.Toast;
 import com.stav.completenotes.db.SQLiteHelper;
 import com.stav.completenotes.db.User;
 
+import java.util.concurrent.Executor;
+
 public class LoginActivity extends AppCompatActivity {
 
     private SQLiteHelper sqLiteHelper;
     private EditText loginEmail, loginPassword;
-
+    // Delay to check if user was logged in before
+    private static int SPLASH_TIME_OUT = 3000;
+    // SharedPreferences where user logged in and email are saved in order to check if he was logged in before
+    public static String PREFS_NAME = "MyPrefsFile";
+    // Fingerprint
+    private Executor executor;
+    private BiometricPrompt.PromptInfo promptInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +63,38 @@ public class LoginActivity extends AppCompatActivity {
                 showHidePwd.setImageResource(R.drawable.ic_hide_pwd);
             }
         });
+    }
 
+    private BiometricPrompt getBiometricPrompt() {
+        executor = ContextCompat.getMainExecutor(this);
+        BiometricPrompt biometricPrompt = new BiometricPrompt(LoginActivity.this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode,
+                                              @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(getApplicationContext(),
+                                "Authentication error: " + errString, Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(
+                    @NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                AfterFingerPrint();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(getApplicationContext(), "Authentication failed",
+                                Toast.LENGTH_SHORT)
+                        .show();
+            }
+        });
+
+        // returns Prompt
+       return biometricPrompt;
     }
 
     // registerOnClick function, set onClick on activity_login.xml in button code.
@@ -91,8 +128,18 @@ public class LoginActivity extends AppCompatActivity {
             }
             sqLiteHelper.setCurrentUser(user);
 
-            Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(mainActivity);
+
+            // Saving the user who logged in at the device so we can make login with fingerprint
+            SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+
+            // Saving if was logged in
+            editor.putBoolean("hasLoggedIn", true);
+            // Saving email
+            editor.putString("emailLoggedIn", user.getEmail());
+            editor.commit();
+
+            updateUI();
         }
     }
 
@@ -142,26 +189,26 @@ public class LoginActivity extends AppCompatActivity {
 //        alertDialog.show();
 //    }
 
-    private void showAlertDialogEmailVerification() {
-        // Setup alert builder
-        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-        builder.setTitle("Email Verification");
-        builder.setMessage("Please verify your email now. You can not login without email verification.");
-
-        // Open email apps if user clicks continue button.
-        builder.setPositiveButton("Continue", (dialog, which) -> { // Instead of new ... using dialog, which, means onClick because these are the values needed
-            Intent emailActivity = new Intent(Intent.ACTION_MAIN);
-            emailActivity.addCategory(Intent.CATEGORY_APP_EMAIL);
-            emailActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);      // To email app in new window and not within the app
-            startActivity(emailActivity);
-        });
-
-        // Create the AlertDialog
-        AlertDialog alertDialog = builder.create();
-
-        // Show the AlertDialog
-        alertDialog.show();
-    }
+//    private void showAlertDialogEmailVerification() {
+//        // Setup alert builder
+//        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+//        builder.setTitle("Email Verification");
+//        builder.setMessage("Please verify your email now. You can not login without email verification.");
+//
+//        // Open email apps if user clicks continue button.
+//        builder.setPositiveButton("Continue", (dialog, which) -> { // Instead of new ... using dialog, which, means onClick because these are the values needed
+//            Intent emailActivity = new Intent(Intent.ACTION_MAIN);
+//            emailActivity.addCategory(Intent.CATEGORY_APP_EMAIL);
+//            emailActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);      // To email app in new window and not within the app
+//            startActivity(emailActivity);
+//        });
+//
+//        // Create the AlertDialog
+//        AlertDialog alertDialog = builder.create();
+//
+//        // Show the AlertDialog
+//        alertDialog.show();
+//    }
 
     // The function transfer to the next activity after logged in
     private void updateUI() {
@@ -177,6 +224,34 @@ public class LoginActivity extends AppCompatActivity {
         Intent registerActivity = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(registerActivity);
         finish();
+    }
+
+    public void fLoginClick(View view) {
+        promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle("Biometric login for my app")
+                .setSubtitle("Log in using your biometric credential")
+                .setNegativeButtonText("Use account password")
+                .build();
+
+        BiometricPrompt biometricPrompt1 = getBiometricPrompt();
+        biometricPrompt1.authenticate(promptInfo);
+    }
+
+    private void AfterFingerPrint() {
+        // loading last user on the phone and logging in.
+        new Handler().postDelayed(() -> {
+            SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, 0);
+            boolean hasLoggedIn = sharedPreferences.getBoolean("hasLoggedIn", false);
+            String userEmail = sharedPreferences.getString("emailLoggedIn", "a@gmail.com");
+            User user = sqLiteHelper.getUserByEmail(userEmail);
+
+            if (hasLoggedIn) {
+                sqLiteHelper.setCurrentUser(user);
+                updateUI();
+            } else {
+                Toast.makeText(this, "You need to login first!", Toast.LENGTH_SHORT).show();
+            }
+        }, SPLASH_TIME_OUT);
     }
 
     // Checking if user is already logged in. In such case, loading the home page.

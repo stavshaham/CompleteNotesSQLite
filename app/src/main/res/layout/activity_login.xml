@@ -98,6 +98,18 @@
                 app:cornerRadius="20dp"
                 tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
+            <Button
+                android:id="@+id/fLoginBtn"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="30dp"
+                android:backgroundTint="@color/lavender"
+                android:onClick="fLoginClick"
+                android:text="@string/login_with_fingerprint"
+                android:textSize="14sp"
+                app:cornerRadius="20dp"
+                tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
+
             <TextView
                 android:id="@+id/signupRedirectText"
                 android:layout_width="wrap_content"

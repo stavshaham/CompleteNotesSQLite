@@ -3,10 +3,10 @@ package com.stav.completenotes.utils;
 public class Item {
     private String title;
     private String detail;
-    private Boolean is_done;//check box
+    private Boolean is_done; //check box
     private String dateTime;
     // private String location;
-    private int id;//unique id which we use as requestCode for alarm
+    private int id; //unique id which we use as requestCode for alarm
 
     public Item(String title, String detail, Boolean is_done, String dateTime, int id){
         this.title = title;

@@ -35,7 +35,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
     private TextView dateTime_text;
     private Button addButton;
 
-    //if the request has come to edit a particular item,
+    // if the request has come to edit a particular item,
     private int itemId;
 
     private SQLiteHelper sqlHelper;
@@ -48,10 +48,10 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
     private Intent alarm_intent;
     private PendingIntent pendingIntent;
 
-    //set time to this Calender
+    // set time to this Calender
     private Calendar c;
 
-    //get current time from this Calender
+    // get current time from this Calender
     private Calendar calendar;
 
     private int day, month, year, hour, minute;
@@ -64,9 +64,10 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
 
         alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarm_intent = new Intent(getApplicationContext(), MyAlarm.class);
-        //to create a notification channel
+        // to create a notification channel
         createNotificationChannel();
 
+        // Set the sqlHelper class to be able to use SQLite
         sqlHelper = new SQLiteHelper(getApplicationContext());
 
         super.onCreate(savedInstanceState);
@@ -76,7 +77,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         detail_text = findViewById(R.id.detail_text);
         dateTime_text = findViewById(R.id.dateTime_text);
 
-        //dateTime_text set Time OnClick...
+        // dateTime_text set Time OnClick
         dateTime_text.setOnClickListener(v -> set_DateTime());
 
         addButton = findViewById(R.id.addButton);
@@ -85,11 +86,11 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         itemId = intent.getIntExtra("itemId", -1);
         Log.i("itemId", String.valueOf(itemId));
 
-        //Editing an existing item in the list
+        // Editing an existing item in the list
         if(itemId != -1) {
             i = MainActivity.itemAdapter.getItem(itemId);
 
-            //initialising values from the item
+            // initialising values from the item
             title_text.setText(i.getTitle());
             detail_text.setText(i.getDetail());
             dateTime_text.setText(i.getDateTime());
@@ -102,20 +103,20 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
                         i.setTitle(title_text.getText().toString());
                         i.setDetail(detail_text.getText().toString());
 
-                        //check if any alarm was associated with it
+                        // check if any alarm was associated with it
                         if(i.getDateTime() != null)
                         {
-                            //dateTime/alarm is already set and must be deleted
+                            // dateTime/alarm is already set and must be deleted
                             cancelAlarm(i.getId());
                         }
 
-                        //new dateTime for the item if provided by the user
+                        // new dateTime for the item if provided by the user
                         i.setDateTime(dateTime_text.getText().toString());
 
-                        //if dateTime is set we need to set the alarm for this item
+                        // if dateTime is set we need to set the alarm for this item
                         if(!dateTime_text.getText().toString().isEmpty())
                         {
-                            //we generate unique id for each alarm and pass it as reqCode,
+                            // generate unique id for each alarm and pass it as reqCode,
                             // to avoid clash with others
                             int id = generate_ID();
                             i.setId(id);
@@ -138,23 +139,23 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
             });
 
         } else {
-            //request has come to add a new item to the adapter (list)
+            // request has come to add a new item to the adapter (list)
             addButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //check if the title exists
+                    // check if the title exists
                     if(!(title_text.getText().toString().replaceAll(" ", "").length() == 0)){
-                        //generate a unique id which is used as reqCode for alarms
+                        // generate a unique id which is used as reqCode for alarms
                         int reqCode = generate_ID();
                         Item newItem = new Item(title_text.getText().toString(), detail_text.getText().toString(), false,dateTime_text.getText().toString(), reqCode);
-                        //add item to the adapter
+                        // add item to the adapter
                         MainActivity.itemAdapter.add(newItem);
 
-                        //if dateTime_text is not empty
-                        //user wants to create a remainder(alarm)
+                        // if dateTime_text is not empty
+                        // user wants to create a remainder(alarm)
                         if(!dateTime_text.getText().toString().isEmpty())
                         {
-                            //dateTime is not empty, is set
+                            // dateTime is not empty, is set
                             setAlarm(c, reqCode, title_text.getText().toString());
                         }
 
@@ -168,7 +169,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         }
 
     }
-    //method to save data to the sqlite
+    // method to save data to the sqlite
     public void saveData() {
         Gson gson = new Gson();
 
@@ -177,31 +178,32 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         sqlHelper.updateBoard(sqlHelper.getCurrentUser().getUsername(), json);
     }
 
-    //method to generate uniqueId
+    // method to generate uniqueId
     public int generate_ID()
     {
-        //get previous id from sqlite,
-        //if no id stored, returns 1
+        // get previous id from sqlite,
+        // if no id stored, returns 1
 
         int id = sqlHelper.getLastId(sqlHelper.getCurrentUser().getUsername());
 
         Log.i("id", String.valueOf(id));
 
-        //if id == -1,  there was no id stored
-        //so we need to initialise it and store
+        // if id == -1,  there was no id stored
+        // so we need to initialise it and store
         if(id == -1)
         {
-            //return the generated ID
+            // return the generated ID
             return 1;
         }
         else
         {
-            //we need to increment the previous id and store and return the same
+            // we need to increment the previous id and store and return the same
             return id+1;
         }
     }
 
     //-----------------------------------------------------------DATE TIME EFFECTS...
+    // Create notification channel to use the alarm
     private void createNotificationChannel(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
@@ -239,7 +241,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
 
 
     }
-    //cancel alarm
+    // cancel alarm
     public void cancelAlarm(int req_code){
         PendingIntent pen = PendingIntent.getBroadcast(EditorActivity.this,
                 req_code, alarm_intent,
@@ -258,7 +260,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
 
-        //after date is set we need to open timePicker to select time
+        // after date is set we need to open timePicker to select time
         TimePickerDialog timePickerDialog = new TimePickerDialog(EditorActivity.this, EditorActivity.this, hour, minute, DateFormat.is24HourFormat(this));
         timePickerDialog.show();
     }
@@ -274,14 +276,14 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
 
         Date date = c.getTime();
 
-        //we format the date as below
+        // we format the date as below
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
-        //fill the dateTime text with the set date time
+        // fill the dateTime text with the set date time
         dateTime_text.setText(simpleDateFormat.format(date).toString());
 
     }
 
-    //Set DateTime
+    // Set DateTime
     public void set_DateTime()
     {
         calendar = Calendar.getInstance();
@@ -293,7 +295,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         datePickerDialog.show();
 
     }
-    //if clearTime textView is clicked,  we need to clear the set Date time
+    // if clearTime textView is clicked,  we need to clear the set Date time
     public void clearTime(View v)
     {
         dateTime_text.setText("");

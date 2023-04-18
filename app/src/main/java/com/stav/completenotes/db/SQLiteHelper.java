@@ -68,16 +68,18 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     public Boolean updateBoard(String username, String items) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
+        // Setting values in ContentValues
         contentValues.put("username", username);
         contentValues.put("items", items);
 
+        // Updating board
         long result = MyDB.update("boards", contentValues, "username = ?", new String[] {username});
 
         if (result == -1) return false;
         return true;
     }
 
-    // Checking if email exists
+    // Checking if email exists, gets String email, returns boolean
     public Boolean emailRegistered(String email) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         Cursor cursor = MyDB.rawQuery("SELECT * FROM users WHERE email = ?", new String[] {email});
@@ -88,7 +90,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    // Checking if username is exists
+    // Checking if username is exists, gets String username, returns boolean
     public Boolean usernameRegistered(String username) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         Cursor cursor = MyDB.rawQuery("SELECT * FROM users WHERE username = ?", new String[] {username});
@@ -99,6 +101,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return false;
     }
 
+    // Checking if the username/email and password are matching and correct, returns boolean
     public Boolean checkUserPassword(String username, String password) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
 
@@ -114,7 +117,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         return false;
     }
-
+    // Gets user items from database, returns string json of items
     public String getItems(String username) {
         String json = "[]";
         SQLiteDatabase MyDB = this.getWritableDatabase();
@@ -126,18 +129,21 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
         return json;
     }
-
+    // Gets the last item id to be able to create new item with unique id
     public int getLastId(String username) {
         int id = -1;
         String json = "[]";
         SQLiteDatabase MyDB = this.getWritableDatabase();
         ArrayList<Item> items;
 
+        // Gets the item list in json
         Cursor result = MyDB.rawQuery("SELECT items FROM boards WHERE username = ?", new String[] {username});
         if( result != null && result.moveToFirst() ){
             json = result.getString(0);
             Type listType = new TypeToken<ArrayList<Item>>(){}.getType();
+            // Converting json to arraylist using Gson extension
             items = new Gson().fromJson(json, listType);
+            // Checks the biggest id and returns it + 1
             if (items.size() > 0)
                 id = items.size() + 1;
             result.close();
@@ -146,6 +152,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return id;
     }
 
+    // Function gets String email and return a User with the full details
     public User getUserByEmail(String email) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         String username, dob, name, phoneNumber, gender, userId;
@@ -164,7 +171,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         return null;
     }
-
+    // Function gets String username and return a User with the full details
     public User getUserByUsername(String username) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         String email, dob, name, phoneNumber, gender, userId;

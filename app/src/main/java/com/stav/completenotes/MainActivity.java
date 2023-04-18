@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    //method to save data in sqlite
+    // method to save data in sqlite
     public void saveData() {
 
         Gson gson = new Gson();
@@ -179,7 +179,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sqlHelper.updateBoard(sqlHelper.getCurrentUser().getUsername(), json);
     }
 
-    //ItemAdapter as ArrayAdapter of type item which we have created as a separate class
+    // ItemAdapter as ArrayAdapter of type item which we have created as a separate class.
+    // Used nested classes because we use ItemAdapter only on this class
     public class ItemAdapter extends ArrayAdapter<Item> {
         public ItemAdapter(Context context, ArrayList<Item> users) {
             super(context, 0, users);
@@ -194,25 +195,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.item, parent, false);
             }
             // Lookup view for data population
-            //holds the TITLE of the item
+            // holds the TITLE of the item
             final TextView tvtitle = convertView.findViewById(R.id.item_title);
 
-            //Setting up the feature to edit any item by clicking on that item
+            // Setting up the feature to edit any item by clicking on that item
             tvtitle.setOnClickListener(v -> {
-                //onClick Editor opens where the user can edit the item
+                // onClick Editor opens where the user can edit the item
                 Intent in = new Intent(getApplicationContext(), EditorActivity.class);
 
-                //we pass this itemId so the editor knows if it
-                //it should create another item or edit the item's details
+                // we pass this itemId so the editor knows if it
+                // it should create another item or edit the item's details
                 in.putExtra("itemId", position);
                 startActivity(in);
             });
-            //feature to delete the item by click and hold
+            // feature to delete the item by click and hold
             tvtitle.setOnLongClickListener(new View.OnLongClickListener() {
                 Item i = getItem(position);
                 @Override
                 public boolean onLongClick(View v) {
-                    //alert dialog to confirm with the user before deleting the selected item
+                    // alert dialog to confirm with the user before deleting the selected item
                     new AlertDialog.Builder(MainActivity.this)
                             .setTitle("Do you want to delete this item?")
                             .setMessage("This item will no longer exist")
@@ -220,15 +221,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
 
-                                    //check if any dateTime(alarm) is associated with this item
-                                    //delete if any
+                                    // check if any dateTime(alarm) is associated with this item
+                                    // delete if any
                                     if(i.getDateTime() != null)
                                     {
-                                        //alarm exists, so cancel
+                                        // alarm exists, so cancel
                                         cancelAlarm(i.getId());
                                     }
 
-                                    //remove the item from the adapter
+                                    // remove the item from the adapter
                                     itemAdapter.remove(i);
 
                                     saveData();
@@ -240,13 +241,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     return true;
                 }
             });
-            //holds the details of the item
+            // holds the details of the item
             final TextView tvdetails = convertView.findViewById(R.id.item_details);
 
-            //holds the state of the item, if checked(completed) or not
+            // holds the state of the item, if checked(completed) or not
             CheckBox tvdone = convertView.findViewById(R.id.item_done);
 
-            //on changing the state of the item
+            // on changing the state of the item
             tvdone.setOnCheckedChangeListener((buttonView, isChecked) -> {
 
                 if (buttonView.isChecked()) {
@@ -255,7 +256,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     Item currentItem = getItem(position);
                     currentItem.setIs_done(true);
 
-                    //feature to strike through the text if the item is checked(completed)
+                    // feature to strike through the text if the item is checked(completed)
                     tvtitle.setPaintFlags(tvtitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     tvdetails.setPaintFlags(tvtitle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
@@ -263,13 +264,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 }
                 else {
-                    //checked.remove((Integer) viewHolder.checkBox.getTag());
-                    Log.i("INFo", "Unchecked "+String.valueOf(position));
-
                     Item currentItem = getItem(position);
                     currentItem.setIs_done(false);
 
-                    //removing the strikeThrough
+                    // removing the strikeThrough
                     tvtitle.setPaintFlags(tvtitle.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
                     tvdetails.setPaintFlags(tvtitle.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
 
@@ -281,11 +279,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             tvtitle.setText(user.getTitle());
             tvdetails.setText(user.getDetail());
 
-            //item_details will be formatted as bullet list
+            // item_details will be formatted as bullet list
             String[] lines = user.getDetail().split("\n");
             tvdetails.setText("");
 
-            //only if item_details exist
+            // only if item_details exist
             if(!user.getDetail().isEmpty()){
                 for (int i = 0; i < lines.length; i++) {
                     //"\u2022" -> bullet point
@@ -300,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         }
 
-        //method to cancel alarm of particular item_id (reqCode)
+        // method to cancel alarm of particular item_id (reqCode)
         public void cancelAlarm(int req_code){
             PendingIntent pen = PendingIntent.getBroadcast(MainActivity.this,
                     req_code, alarm_intent,
@@ -311,7 +309,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
     }
 
-    //Menu
+    // Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -337,7 +335,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 clearAll();
                 return true;
 
-            //clear only those items which are being checked
+            // clear only those items which are being checked
             case R.id.clear_completed:
                 clear_completed();
                 return true;
@@ -357,8 +355,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 
-                        //adapter.clear() also could have been used to remove the items
-                        //but I also need to cancel the alarms associated with it
+                        // adapter.clear() also could have been used to remove the items
+                        // but I also need to cancel the alarms associated with it
                         Log.i("No of items", String.valueOf(itemAdapter.getCount()));
 
                         while(itemAdapter.getCount() > 0)
@@ -400,10 +398,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         Item it = itemAdapter.getItem(ind - 1);
                         if(it.getIs_done())
                         {
-                            //clear the alarms associated with this item
+                            // clear the alarms associated with this item
                             if(it.getDateTime() != null)
                             {
-                                //alarm must be set
+                                // alarm must be set
                                 cancelAlarm(it.getId());
                             }
                             Log.i("Removed", String.valueOf(itemAdapter.getCount()));

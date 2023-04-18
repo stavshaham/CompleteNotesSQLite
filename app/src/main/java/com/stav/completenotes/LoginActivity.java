@@ -1,14 +1,18 @@
 package com.stav.completenotes;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.SmsManager;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
@@ -21,6 +25,7 @@ import android.widget.Toast;
 import com.stav.completenotes.db.SQLiteHelper;
 import com.stav.completenotes.db.User;
 
+import java.util.Random;
 import java.util.concurrent.Executor;
 
 public class LoginActivity extends AppCompatActivity {
@@ -145,70 +150,108 @@ public class LoginActivity extends AppCompatActivity {
 
     // forgotPasswordOnClick function, set onClick on activity_login.xml in forgot password text code.
     // The function login with the entered details and if they are correct opening new intent
-//    public void forgotPasswordOnClick(View view) {
-//        // Setup alert builder
-//        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-//        builder.setTitle("Forgot your password?");
-//        builder.setMessage("Enter your email address");
-//
-//        final EditText editTextDialogEmail = new EditText(LoginActivity.this);
-//        editTextDialogEmail.setTextColor(getResources().getColor(R.color.lavender));
-//        editTextDialogEmail.setTextSize(18);
-//        editTextDialogEmail.setHint("Enter your email address");
-//
-//        builder.setView(editTextDialogEmail);
-//
-//        // Open email apps if user clicks continue button.
-//        builder.setPositiveButton("Continue", (dialog, which) -> { // Instead of new ... using dialog, which, means onClick because these are the values needed
-//            String email = editTextDialogEmail.getText().toString();
-//            if (TextUtils.isEmpty(email)) {
-//                Toast.makeText(LoginActivity.this, "Please enter an email", Toast.LENGTH_SHORT).show();
-//                editTextDialogEmail.setError("Email is required");
-//                editTextDialogEmail.setFocusable(true);
-//                forgotPasswordOnClick(null);
-//            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-//                Toast.makeText(LoginActivity.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
-//                editTextDialogEmail.setError("Email is not valid");
-//                editTextDialogEmail.setFocusable(true);
-//                forgotPasswordOnClick(null);
-//            } else {
-//                Intent mailIntent = new Intent(Intent.ACTION_VIEW);
-//
-//                //initialse the values for the mail
-//                Uri data = Uri.parse("mailto:?subject=" + "CompleteNotes reset password"+ "&body=" + "Please click this link to reset your password." + "&to=" + email);
-//
-//                mailIntent.setData(data);
-//                startActivity(Intent.createChooser(mailIntent, "Send mail..."));
-//            }
-//        });
+    public void forgotPasswordOnClick(View view) {
+        // Setup alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("Forgot your password?");
+        builder.setMessage("Enter your email address");
+
+        final EditText editTextDialogEmail = new EditText(LoginActivity.this);
+        editTextDialogEmail.setTextColor(getResources().getColor(R.color.lavender));
+        editTextDialogEmail.setTextSize(18);
+        editTextDialogEmail.setHint("Enter your email address");
+
+        builder.setView(editTextDialogEmail);
+
+        // Sending messages
+        builder.setPositiveButton("Continue", (dialog, which) -> { // Instead of new ... using dialog, which, means onClick because these are the values needed
+            String email = editTextDialogEmail.getText().toString();
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(LoginActivity.this, "Please enter an email", Toast.LENGTH_SHORT).show();
+                editTextDialogEmail.setError("Email is required");
+                editTextDialogEmail.setFocusable(true);
+                forgotPasswordOnClick(null);
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                Toast.makeText(LoginActivity.this, "Please enter a valid email", Toast.LENGTH_SHORT).show();
+                editTextDialogEmail.setError("Email is not valid");
+                editTextDialogEmail.setFocusable(true);
+                forgotPasswordOnClick(null);
+            } else {
+                // Getting random code with 4 numbers to send to the user
+                String code = getVerificationCode();
+                // Getting user details
+                User user = sqLiteHelper.getUserByEmail(email);
+                String phone = user.getPhoneNumber();
+
+                // new PendingIntent
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+                // Get the SmsManager instance and sending sms
+                SmsManager smsManager = SmsManager.getDefault();
+                smsManager.sendTextMessage(phone, null, "Your verification code to Todo Application is: " + code, pendingIntent, null);
+
+                // Calling useCode function with the code
+                useCode(code);
+            }
+        });
 
         // Create the AlertDialog
-//        AlertDialog alertDialog = builder.create();
-//
-//        // Show the AlertDialog
-//        alertDialog.show();
-//    }
+        AlertDialog alertDialog = builder.create();
 
-//    private void showAlertDialogEmailVerification() {
-//        // Setup alert builder
-//        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-//        builder.setTitle("Email Verification");
-//        builder.setMessage("Please verify your email now. You can not login without email verification.");
-//
-//        // Open email apps if user clicks continue button.
-//        builder.setPositiveButton("Continue", (dialog, which) -> { // Instead of new ... using dialog, which, means onClick because these are the values needed
-//            Intent emailActivity = new Intent(Intent.ACTION_MAIN);
-//            emailActivity.addCategory(Intent.CATEGORY_APP_EMAIL);
-//            emailActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);      // To email app in new window and not within the app
-//            startActivity(emailActivity);
-//        });
-//
-//        // Create the AlertDialog
-//        AlertDialog alertDialog = builder.create();
-//
-//        // Show the AlertDialog
-//        alertDialog.show();
-//    }
+        // Show the AlertDialog
+        alertDialog.show();
+    }
+
+    public void useCode(String code) {
+        // Setup alert builder
+        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+        builder.setTitle("Got your code?");
+        builder.setMessage("Enter the code you received");
+
+        final EditText editTextDialogCode = new EditText(LoginActivity.this);
+        editTextDialogCode.setTextColor(getResources().getColor(R.color.lavender));
+        editTextDialogCode.setTextSize(18);
+        editTextDialogCode.setHint("Enter the code");
+
+        builder.setView(editTextDialogCode);
+
+        // Sending messages
+        builder.setPositiveButton("Continue", (dialog, which) -> { // Instead of new ... using dialog, which, means onClick because these are the values needed
+            String enteredCode = editTextDialogCode.getText().toString();
+            if (TextUtils.isEmpty(enteredCode)) {
+                Toast.makeText(LoginActivity.this, "Please enter an email", Toast.LENGTH_SHORT).show();
+                editTextDialogCode.setError("Email is required");
+                editTextDialogCode.setFocusable(true);
+                forgotPasswordOnClick(null);
+            } else {
+                if (enteredCode == code) {
+                    codeConfirm();
+                } else {
+                    codeWrong();
+                }
+            }
+        });
+    }
+
+    public void codeConfirm() {
+
+    }
+
+    public void codeWrong() {
+
+    }
+
+    // getVerificationCode, function that returns a random code with 4 numbers to verify the users and allow to change the password.
+    public String getVerificationCode() {
+        String num = "";
+        for (int i = 0; i > 4; i++) {
+            Random random = new Random();
+            num += String.valueOf(random.nextInt(10));
+        }
+
+        return num;
+    }
 
     // The function transfer to the next activity after logged in
     private void updateUI() {

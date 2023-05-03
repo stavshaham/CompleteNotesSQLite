@@ -40,7 +40,7 @@
         android:layout_marginTop="12dp"
         android:clickable="true"
         android:minHeight="48dp"
-        android:text="Suggestions"
+        android:text="Logout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.471"
         app:layout_constraintStart_toStartOf="parent"

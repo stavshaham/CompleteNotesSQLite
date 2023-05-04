@@ -14,7 +14,7 @@ import com.stav.completenotes.db.SQLiteHelper;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    private TextView suggestions, logout;
+    private TextView suggestions, logout, userSettings;
     private SQLiteHelper sqLiteHelper;
 
     @SuppressLint("MissingInflatedId")
@@ -30,6 +30,8 @@ public class SettingsActivity extends AppCompatActivity {
         suggestions = findViewById(R.id.suggestions);
         // Links the logout btn
         logout = findViewById(R.id.logout);
+        // Links to the user settings btn
+        userSettings = findViewById(R.id.settings);
 
         logout.setOnClickListener(view -> {
             sqLiteHelper.setCurrentUser(null);
@@ -50,11 +52,16 @@ public class SettingsActivity extends AppCompatActivity {
         suggestions.setOnClickListener(v -> {
             Intent mailIntent = new Intent(Intent.ACTION_VIEW);
 
-            //initialse the values for the mail
+            //initialize the values for the mail
             Uri data = Uri.parse("mailto:?subject=" + "ToDo App Suggestion"+ "&body=" + "Your Suggestions" + "&to=" + "shahamstav@gmail.com");
 
             mailIntent.setData(data);
             startActivity(Intent.createChooser(mailIntent, "Send mail..."));
+        });
+
+        userSettings.setOnClickListener(v -> {
+            Intent settings = new Intent(SettingsActivity.this, UserSettingsActivity.class);
+            startActivity(settings);
         });
     }
 }

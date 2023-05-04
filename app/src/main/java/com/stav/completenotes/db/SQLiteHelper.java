@@ -15,6 +15,7 @@ import com.stav.completenotes.utils.Item;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class SQLiteHelper extends SQLiteOpenHelper {
 
@@ -53,16 +54,30 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValuesUser.put("phoneNumber", phoneNumber);
         contentValuesUser.put("dob", dob);
         contentValuesUser.put("name", name);
+        contentValuesUser.put("userId", generateUserId());
 
         ContentValues contentValuesBoard = new ContentValues();
         contentValuesBoard.put("username", username);
-        contentValuesBoard.put("items", "{}");
+        contentValuesBoard.put("items", "[]");
 
         long result = MyDB.insert("users", null, contentValuesUser);
         MyDB.insert("boards", null, contentValuesBoard);
 
         if (result == -1) return false;
         return true;
+    }
+
+    private int generateUserId() {
+        SQLiteDatabase MyDB = this.getWritableDatabase();
+        Random random = new Random();
+        int num = random.nextInt(900000000);
+        num += 100000000;
+        Cursor cursor = MyDB.rawQuery("SELECT * FROM users WHERE userId = ?", new String[] {num + ""});
+
+        if (cursor.getCount() > 0)
+            return generateUserId();
+
+        return num;
     }
 
     public Boolean updateBoard(String username, String items) {
@@ -74,6 +89,36 @@ public class SQLiteHelper extends SQLiteOpenHelper {
 
         // Updating board
         long result = MyDB.update("boards", contentValues, "username = ?", new String[] {username});
+
+        if (result == -1) return false;
+        return true;
+    }
+
+    public Boolean updateUser(User user) {
+        SQLiteDatabase MyDB = this.getWritableDatabase();
+        Cursor cursor = MyDB.rawQuery("SELECT * FROM users WHERE userId = ?", new String[] {user.getUserId()});
+
+        if (cursor.getCount() > 0) {
+            MyDB.execSQL("DELETE FROM users WHERE userId = " + user.getUserId());
+            return updateExistingUser(user);
+        } else {
+            return insertUser(user.getEmail(), user.getUsername(), user.getPassword(), user.getGender(), user.getPhoneNumber(), user.getGender(), user.getName());
+        }
+    }
+
+    private Boolean updateExistingUser(User user) {
+        SQLiteDatabase MyDB = this.getWritableDatabase();
+        ContentValues contentValuesUser = new ContentValues();
+        contentValuesUser.put("email", user.getEmail());
+        contentValuesUser.put("username", user.getUsername());
+        contentValuesUser.put("password", user.getPassword());
+        contentValuesUser.put("gender", user.getGender());
+        contentValuesUser.put("phoneNumber", user.getPhoneNumber());
+        contentValuesUser.put("dob", user.getDob());
+        contentValuesUser.put("name", user.getName());
+        contentValuesUser.put("userId", user.getUserId());
+
+        long result = MyDB.insert("users", null, contentValuesUser);
 
         if (result == -1) return false;
         return true;
@@ -155,10 +200,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     // Function gets String email and return a User with the full details
     public User getUserByEmail(String email) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
-        String username, dob, name, phoneNumber, gender, userId;
+        String username, dob, name, phoneNumber, gender, userId, password;
         Cursor result = MyDB.rawQuery("SELECT * FROM users WHERE email = ?", new String[] {email});
         if( result != null && result.moveToFirst() ){
             username = result.getString(1);
+            password = result.getString(2);
             dob = result.getString(3);
             name = result.getString(4);
             phoneNumber = result.getString(5);
@@ -166,7 +212,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             userId = result.getString(7);
             result.close();
 
-            return new User(username, email, dob, name, phoneNumber, gender, userId);
+            return new User(username, email, dob, name, phoneNumber, gender, userId, password);
         }
 
         return null;
@@ -174,10 +220,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     // Function gets String username and return a User with the full details
     public User getUserByUsername(String username) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
-        String email, dob, name, phoneNumber, gender, userId;
+        String email, dob, name, phoneNumber, gender, userId, password;
         Cursor result = MyDB.rawQuery("SELECT * FROM users WHERE username = ?", new String[] {username});
         if( result != null && result.moveToFirst() ){
             email = result.getString(0);
+            password = result.getString(2);
             dob = result.getString(3);
             name = result.getString(4);
             phoneNumber = result.getString(5);
@@ -185,7 +232,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
             userId = result.getString(7);
             result.close();
 
-            return new User(username, email, dob, name, phoneNumber, gender, userId);
+            return new User(username, email, dob, name, phoneNumber, gender, userId, password);
         }
 
         return null;

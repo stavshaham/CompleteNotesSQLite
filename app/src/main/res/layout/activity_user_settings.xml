@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserSettingsActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@color/lavender">
+
+            <TextView
+                android:id="@+id/text_show_welcome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="5dp"
+                android:hint="@string/loading"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="@color/white"
+                tools:ignore="TextContrastCheck" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            android:layout_margin="15dp"
+            android:background="@color/white">
+
+            <ImageView
+                android:id="@+id/ic_profile"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:background="@drawable/baseline_person_outline_24"
+                tools:ignore="ImageContrastCheck" />
+
+            <EditText
+                android:id="@+id/edit_text_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/ic_profile"
+                android:layout_marginStart="50dp"
+                android:background="@android:color/transparent"
+                android:hint="Loading..."
+                android:textSize="18sp"
+                tools:ignore="TextContrastCheck"
+                android:inputType="text"
+                android:focusable="false"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/edit_text_name"
+                android:background="@android:color/darker_gray"
+                android:id="@+id/divider_email"/>
+
+            <ImageView
+                android:id="@+id/ic_email"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@id/divider_email"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/ic_baseline_email_24"
+                tools:ignore="ImageContrastCheck" />
+
+            <EditText
+                android:id="@+id/edit_text_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_email"
+                android:layout_alignStart="@id/ic_email"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent"
+                android:hint="@string/loading"
+                android:textSize="18sp"
+                tools:ignore="TextContrastCheck"
+                android:inputType="textEmailAddress"
+                android:focusable="false"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/edit_text_email"
+                android:background="@android:color/darker_gray"
+                android:id="@+id/divider_dob"/>
+
+            <ImageView
+                android:id="@+id/ic_dob"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@id/divider_dob"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/ic_baseline_calendar_month_24"
+                tools:ignore="ImageContrastCheck" />
+
+            <EditText
+                android:id="@+id/edit_text_dob"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_dob"
+                android:layout_alignStart="@id/ic_email"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent"
+                android:hint="@string/loading"
+                android:textSize="18sp"
+                tools:ignore="TextContrastCheck"
+                android:inputType="date"
+                android:focusable="false"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/edit_text_dob"
+                android:background="@android:color/darker_gray"
+                android:id="@+id/divider_gender"/>
+
+            <ImageView
+                android:id="@+id/ic_gender"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@id/divider_gender"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/baseline_male_24"
+                tools:ignore="ImageContrastCheck" />
+
+            <EditText
+                android:id="@+id/edit_text_gender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_gender"
+                android:layout_alignStart="@id/ic_email"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent"
+                android:hint="@string/loading"
+                android:textSize="18sp"
+                tools:ignore="TouchTargetSizeCheck,TextContrastCheck"
+                android:inputType="text"
+                android:focusable="false"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/edit_text_gender"
+                android:background="@android:color/darker_gray"
+                android:id="@+id/divider_phone"/>
+
+            <ImageView
+                android:id="@+id/ic_phone"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_below="@id/divider_phone"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/ic_baseline_local_phone_24"
+                tools:ignore="ImageContrastCheck" />
+
+            <EditText
+                android:id="@+id/edit_text_phone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/divider_phone"
+                android:layout_alignStart="@id/ic_phone"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="20dp"
+                android:background="@android:color/transparent"
+                android:hint="@string/loading"
+                android:textSize="18sp"
+                android:inputType="phone"
+                android:focusable="false"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="20dp"
+                android:layout_below="@id/edit_text_phone"
+                android:background="@android:color/darker_gray"
+                android:id="@+id/divider_last"/>
+
+            <Button
+                android:layout_below="@id/divider_last"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/lavender"
+                android:layout_marginTop="20dp"
+                android:text="@string/save"
+                android:id="@+id/saveBtn"/>
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</ScrollView>

@@ -8,8 +8,9 @@ public class User {
     private String phoneNumber;
     private String gender;
     private String userId;
+    private String password;
 
-    public User(String username, String email, String dob, String name, String phoneNumber, String gender, String userId) {
+    public User(String username, String email, String dob, String name, String phoneNumber, String gender, String userId, String password) {
         this.username = username;
         this.email = email;
         this.dob = dob;
@@ -17,6 +18,7 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.gender = gender;
         this.userId = userId;
+        this.password = password;
     }
 
     public String getUsername() {
@@ -69,5 +71,13 @@ public class User {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

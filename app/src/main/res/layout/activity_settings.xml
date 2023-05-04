@@ -34,6 +34,19 @@
         app:layout_constraintTop_toBottomOf="@id/textView" />
 
     <TextView
+        android:id="@+id/user"
+        android:layout_width="307dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:clickable="true"
+        android:minHeight="48dp"
+        android:text="User Settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.471"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/suggestions" />
+
+    <TextView
         android:id="@+id/logout"
         android:layout_width="307dp"
         android:layout_height="wrap_content"
@@ -44,6 +57,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.471"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/suggestions" />
+        app:layout_constraintTop_toBottomOf="@id/user" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

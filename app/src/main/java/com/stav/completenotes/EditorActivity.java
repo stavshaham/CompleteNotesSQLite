@@ -78,7 +78,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         dateTime_text = findViewById(R.id.dateTime_text);
 
         // dateTime_text set Time OnClick
-        dateTime_text.setOnClickListener(v -> set_DateTime());
+        dateTime_text.setOnClickListener(v -> setDateTime());
 
         addButton = findViewById(R.id.addButton);
 
@@ -118,7 +118,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
                         {
                             // generate unique id for each alarm and pass it as reqCode,
                             // to avoid clash with others
-                            int id = generate_ID();
+                            int id = generateID();
                             i.setId(id);
 
                             // we pass the time, uniqueId as reqCode,
@@ -146,7 +146,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
                     // check if the title exists
                     if(!(title_text.getText().toString().replaceAll(" ", "").length() == 0)){
                         // generate a unique id which is used as reqCode for alarms
-                        int reqCode = generate_ID();
+                        int reqCode = generateID();
                         Item newItem = new Item(title_text.getText().toString(), detail_text.getText().toString(), false,dateTime_text.getText().toString(), reqCode);
                         // add item to the adapter
                         MainActivity.itemAdapter.add(newItem);
@@ -175,16 +175,16 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
 
         String json = gson.toJson(MainActivity.itemArrayList);
         Log.i("Items: ", json + " User: " + sqlHelper.getCurrentUser().getUsername());
-        sqlHelper.updateBoard(sqlHelper.getCurrentUser().getUsername(), json);
+        sqlHelper.updateBoard(sqlHelper.getCurrentUser(), json);
     }
 
     // method to generate uniqueId
-    public int generate_ID()
+    public int generateID()
     {
         // get previous id from sqlite,
         // if no id stored, returns 1
 
-        int id = sqlHelper.getLastId(sqlHelper.getCurrentUser().getUsername());
+        int id = sqlHelper.getLastId(sqlHelper.getCurrentUser());
 
         Log.i("id", String.valueOf(id));
 
@@ -212,7 +212,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
 
             int importance = NotificationManager.IMPORTANCE_HIGH;
 
-            NotificationChannel channel = new NotificationChannel("notifyLemubit", name, importance);
+            NotificationChannel channel = new NotificationChannel("notify", name, importance);
             channel.setDescription(description);
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
@@ -284,7 +284,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
     }
 
     // Set DateTime
-    public void set_DateTime()
+    public void setDateTime()
     {
         calendar = Calendar.getInstance();
         year = calendar.get(Calendar.YEAR);

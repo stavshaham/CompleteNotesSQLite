@@ -114,7 +114,7 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(this, "Please select a gender", Toast.LENGTH_SHORT).show();
         } else {
             gender = buttonGenderSelected.getText().toString();
-            CreateUser(email, password, username, gender, mobile, dob, name);
+            createUser(email, password, username, gender, mobile, dob, name);
         }
     }
 
@@ -124,7 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
         finish();
     }
 
-    private void CreateUser(String email, String password, String username, String gender, String mobile, String dob, String name) {
+    private void createUser(String email, String password, String username, String gender, String mobile, String dob, String name) {
         // Checking if email is already registered
         if (sqLiteHelper.emailRegistered(email)) {
             Toast.makeText(this, "Email is already registered", Toast.LENGTH_SHORT).show();

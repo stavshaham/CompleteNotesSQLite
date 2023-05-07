@@ -42,6 +42,7 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.stav.completenotes.db.SQLiteHelper;
+import com.stav.completenotes.db.User;
 import com.stav.completenotes.utils.Item;
 import com.stav.completenotes.utils.MyAlarm;
 
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         createNotificationChannel();
 
         //Loading the saved data in data base
-        loadData(sqlHelper.getCurrentUser().getUsername());
+        loadData(sqlHelper.getCurrentUser());
 
         //Initialising adapter for listView
         itemAdapter = new ItemAdapter(this, itemArrayList);
@@ -129,10 +130,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     //method for loading data from database
-    private void loadData(String username) {
+    private void loadData(User user) {
         Gson gson = new Gson();
         //json contains the stored data if any, else null
-        String json = sqlHelper.getItems(username);
+        String json = sqlHelper.getItems(user);
         Log.i("items: ", json);
         Type type = new TypeToken<ArrayList<Item>>(){}.getType();
         itemArrayList = gson.fromJson(json, type);
@@ -176,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         String json = gson.toJson(MainActivity.itemArrayList);
         Log.i("Items: ", json + " User: " + sqlHelper.getCurrentUser().getUsername());
-        sqlHelper.updateBoard(sqlHelper.getCurrentUser().getUsername(), json);
+        sqlHelper.updateBoard(sqlHelper.getCurrentUser(), json);
     }
 
     // ItemAdapter as ArrayAdapter of type item which we have created as a separate class.
@@ -337,7 +338,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             // clear only those items which are being checked
             case R.id.clear_completed:
-                clear_completed();
+                clearCompleted();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -384,8 +385,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     }
-    //    similarly for removing checked items
-    public void clear_completed(){
+    // removing checked items
+    public void clearCompleted(){
         new AlertDialog.Builder(MainActivity.this)
                 .setTitle("Are you sure?")
                 .setMessage("All the Completed will be cleared")

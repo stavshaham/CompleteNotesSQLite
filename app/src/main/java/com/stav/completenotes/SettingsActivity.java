@@ -31,7 +31,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Links the logout btn
         logout = findViewById(R.id.logout);
         // Links to the user settings btn
-        userSettings = findViewById(R.id.settings);
+        userSettings = findViewById(R.id.userSettings);
 
         logout.setOnClickListener(view -> {
             sqLiteHelper.setCurrentUser(null);

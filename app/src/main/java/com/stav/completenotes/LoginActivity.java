@@ -102,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
        return biometricPrompt;
     }
 
-    // registerOnClick function, set onClick on activity_login.xml in button code.
+    // loginonclick function, set onClick on activity_login.xml in button code.
     // The function login with the entered details and if they are correct opening new intent
     public void loginOnClick(View view) {
         String email = loginEmail.getText().toString();

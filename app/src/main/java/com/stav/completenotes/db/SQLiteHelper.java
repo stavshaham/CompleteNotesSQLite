@@ -30,7 +30,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         MyDB.execSQL("CREATE TABLE users(email TEXT primary key, username TEXT, password TEXT, dob TEXT, name TEXT, phoneNumber TEXT, gender TEXT, userId LONGTEXT)");
 
         // Creating boards table with user, board name and its items.
-        MyDB.execSQL("CREATE TABLE boards(username TEXT primary key, items LONGTEXT)");
+        MyDB.execSQL("CREATE TABLE boards(userId LONGTEXT primary key, items LONGTEXT)");
     }
 
     @Override
@@ -46,6 +46,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
     // Inserts user values, email, password, and username
     public Boolean insertUser(String email, String username, String password, String gender, String phoneNumber, String dob, String name) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
+        Integer userId = generateUserId();
         ContentValues contentValuesUser = new ContentValues();
         contentValuesUser.put("email", email);
         contentValuesUser.put("username", username);
@@ -54,10 +55,10 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValuesUser.put("phoneNumber", phoneNumber);
         contentValuesUser.put("dob", dob);
         contentValuesUser.put("name", name);
-        contentValuesUser.put("userId", generateUserId());
+        contentValuesUser.put("userId", userId);
 
         ContentValues contentValuesBoard = new ContentValues();
-        contentValuesBoard.put("username", username);
+        contentValuesBoard.put("userId", userId);
         contentValuesBoard.put("items", "[]");
 
         long result = MyDB.insert("users", null, contentValuesUser);
@@ -80,15 +81,15 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return num;
     }
 
-    public Boolean updateBoard(String username, String items) {
+    public Boolean updateBoard(User user, String items) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         // Setting values in ContentValues
-        contentValues.put("username", username);
+        contentValues.put("userId", user.getUserId());
         contentValues.put("items", items);
 
         // Updating board
-        long result = MyDB.update("boards", contentValues, "username = ?", new String[] {username});
+        long result = MyDB.update("boards", contentValues, "userId = ?", new String[] {user.getUserId()});
 
         if (result == -1) return false;
         return true;
@@ -106,6 +107,7 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         }
     }
 
+    // Deleting existing user and inserting the new details, userId does not change
     private Boolean updateExistingUser(User user) {
         SQLiteDatabase MyDB = this.getWritableDatabase();
         ContentValues contentValuesUser = new ContentValues();
@@ -118,8 +120,11 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         contentValuesUser.put("name", user.getName());
         contentValuesUser.put("userId", user.getUserId());
 
-        long result = MyDB.insert("users", null, contentValuesUser);
+        // Deleting the existing user
+        MyDB.execSQL("DELETE FROM users WHERE userId = ?", new String[] {user.getUserId()});
 
+        // Inserting the new user details
+        long result = MyDB.insert("users", null, contentValuesUser);
         if (result == -1) return false;
         return true;
     }
@@ -163,26 +168,26 @@ public class SQLiteHelper extends SQLiteOpenHelper {
         return false;
     }
     // Gets user items from database, returns string json of items
-    public String getItems(String username) {
+    public String getItems(User user) {
         String json = "[]";
         SQLiteDatabase MyDB = this.getWritableDatabase();
 
-        Cursor result = MyDB.rawQuery("SELECT items FROM boards WHERE username = ?", new String[] {username});
+        Cursor result = MyDB.rawQuery("SELECT items FROM boards WHERE userId = ?", new String[] {user.getUserId()});
         if( result != null && result.moveToFirst() ){
             json = result.getString(0);
             result.close();
         }
         return json;
     }
-    // Gets the last item id to be able to create new item with unique id
-    public int getLastId(String username) {
+    // Gets the last item id to create new item with unique id
+    public int getLastId(User user) {
         int id = -1;
         String json = "[]";
         SQLiteDatabase MyDB = this.getWritableDatabase();
         ArrayList<Item> items;
 
         // Gets the item list in json
-        Cursor result = MyDB.rawQuery("SELECT items FROM boards WHERE username = ?", new String[] {username});
+        Cursor result = MyDB.rawQuery("SELECT items FROM boards WHERE userId = ?", new String[] {user.getUserId()});
         if( result != null && result.moveToFirst() ){
             json = result.getString(0);
             Type listType = new TypeToken<ArrayList<Item>>(){}.getType();

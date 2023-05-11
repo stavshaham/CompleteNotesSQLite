@@ -1,6 +1,7 @@
 package com.stav.completenotes;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 
 import android.app.AlarmManager;
 import android.app.DatePickerDialog;
@@ -212,7 +213,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
 
             int importance = NotificationManager.IMPORTANCE_HIGH;
 
-            NotificationChannel channel = new NotificationChannel("notify", name, importance);
+            NotificationChannel channel = new NotificationChannel("notifyLemubit", name, importance);
             channel.setDescription(description);
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
@@ -238,10 +239,9 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
 
         alarmManager.setExact(AlarmManager.RTC_WAKEUP, c.getTimeInMillis() - 2000, pendingIntent);
         Log.i("Note", "Alarm SET " + req_code);
-
-
     }
-    // cancel alarm
+
+    //cancel alarm
     public void cancelAlarm(int req_code){
         PendingIntent pen = PendingIntent.getBroadcast(EditorActivity.this,
                 req_code, alarm_intent,
@@ -260,7 +260,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         hour = calendar.get(Calendar.HOUR_OF_DAY);
         minute = calendar.get(Calendar.MINUTE);
 
-        // after date is set we need to open timePicker to select time
+        //after date is set we need to open timePicker to select time
         TimePickerDialog timePickerDialog = new TimePickerDialog(EditorActivity.this, EditorActivity.this, hour, minute, DateFormat.is24HourFormat(this));
         timePickerDialog.show();
     }
@@ -276,14 +276,14 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
 
         Date date = c.getTime();
 
-        // we format the date as below
+        //we format the date as below
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm");
-        // fill the dateTime text with the set date time
+        //fill the dateTime text with the set date time
         dateTime_text.setText(simpleDateFormat.format(date).toString());
 
     }
 
-    // Set DateTime
+    //Set DateTime
     public void setDateTime()
     {
         calendar = Calendar.getInstance();
@@ -295,7 +295,7 @@ public class EditorActivity extends AppCompatActivity implements DatePickerDialo
         datePickerDialog.show();
 
     }
-    // if clearTime textView is clicked,  we need to clear the set Date time
+    //if clearTime textView is clicked,  we need to clear the set Date time
     public void clearTime(View v)
     {
         dateTime_text.setText("");

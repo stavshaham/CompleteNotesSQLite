@@ -271,7 +271,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void fLoginClick(View view) {
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Biometric login for my app")
+                .setTitle("Biometric login")
                 .setSubtitle("Log in using your biometric credential")
                 .setNegativeButtonText("Use account password")
                 .build();

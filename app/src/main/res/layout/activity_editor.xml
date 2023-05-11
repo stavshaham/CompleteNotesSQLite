@@ -27,16 +27,19 @@
         android:id="@+id/addButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="@color/colorPrimaryDark"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/lavender"
+        android:onClick="loginOnClick"
         android:text="Add"
-        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        app:cornerRadius="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clearTIme_button"
-        app:layout_constraintVertical_bias="0.024" />
+        app:layout_constraintVertical_bias="0.0"
+        tools:ignore="DuplicateSpeakableTextCheck,TextContrastCheck" />
 
     <TextView
         android:id="@+id/textView4"

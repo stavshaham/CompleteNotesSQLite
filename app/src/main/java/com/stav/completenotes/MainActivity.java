@@ -1,38 +1,23 @@
 package com.stav.completenotes;
 
-import static android.content.ContentValues.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import android.app.AlarmManager;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Paint;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
@@ -49,7 +34,7 @@ import com.stav.completenotes.utils.MyAlarm;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity {
 
     public static ArrayList<Item> itemArrayList;
     public static ItemAdapter itemAdapter;
@@ -60,13 +45,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private AlarmManager alarmManager;
     private Intent alarm_intent;
 
-    private SensorManager sensorManager;
-    private Sensor proximitySensor;
-    private int currentTaskIndex = 0;
-    private static final String CHANNEL_ID = "my_channel_01";
-    private static final CharSequence CHANNEL_NAME = "My Channel";
-    private static final int NOTIFICATION_ID = 1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Setting the sql helper
@@ -74,8 +52,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        createNotificationChannel();
 
         //Loading the saved data in data base
         loadData(sqlHelper.getCurrentUser());
@@ -89,44 +65,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //initialising alarmManager and alarm_intent, which we use it later
         alarmManager = (AlarmManager)getSystemService(ALARM_SERVICE);
         alarm_intent = new Intent(getApplicationContext(), MyAlarm.class);
-
-        // Adding sensor that detects when the user's hand is near the device.
-        // When the sensor detects that the user's hand is close to the device,
-        // it could trigger the application to display a pop-up notification with the next item on the list.
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-        // Get a reference to the proximity sensor
-        proximitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        sensorManager.registerListener(this, proximitySensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        sensorManager.unregisterListener(this);
-    }
-
-    // Detects when the proximity sensor changes
-    @Override
-    public void onSensorChanged(SensorEvent event) {
-        float proximityValue = event.values[0];
-        if (proximityValue < proximitySensor.getMaximumRange()) {
-            currentTaskIndex++;
-            if (currentTaskIndex >= itemArrayList.size()) {
-                currentTaskIndex = 0;
-            }
-
-            showNotification(itemArrayList.get(currentTaskIndex).getTitle());
-        }
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Do nothing
     }
 
     //method for loading data from database
@@ -135,38 +73,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //json contains the stored data if any, else null
         String json = sqlHelper.getItems(user);
         Log.i("items: ", json);
-        Type type = new TypeToken<ArrayList<Item>>(){}.getType();
+        Type type = new TypeToken<ArrayList<Item>>() {
+        }.getType();
         itemArrayList = gson.fromJson(json, type);
 
-        if(itemArrayList == null){
+        if (itemArrayList == null) {
             itemArrayList = new ArrayList<>();
-        }
-    }
-
-    private void createNotificationChannel() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            String description = "My Notification Channel Description";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance);
-            channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
-    }
-    private void showNotification(String task) {
-        try {
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_done_black_24dp)
-                    .setContentTitle("Task Reminder")
-                    .setContentText(task)
-                    .setPriority(NotificationCompat.PRIORITY_MAX);
-
-            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-            notificationManager.notify(NOTIFICATION_ID, builder.build());
-        } catch (NullPointerException e) {
-            Log.e(TAG, "Notification error: " + e.getMessage());
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG, "Notification error: " + e.getMessage());
         }
     }
 

@@ -178,6 +178,7 @@
                     android:text="@string/sign_up"
                     android:textColor="@color/white"
                     android:textSize="18sp"
+                    app:cornerRadius="20dp"
                     tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck,TouchTargetSizeCheck" />
 
                 <TextView
